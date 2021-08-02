@@ -20,6 +20,7 @@ gads_get_report_helper <- function(
   parameters            = NULL,
   date_from             = Sys.Date() - 15,
   date_to               = Sys.Date() - 1,
+  during                = c(NA, "TODAY", "YESTERDAY", "LAST_7_DAYS", "LAST_BUSINESS_WEEK", "THIS_MONTH", "LAST_MONTH", "LAST_14_DAYS", "LAST_30_DAYS", "THIS_WEEK_SUN_TODAY", "THIS_WEEK_MON_TODAY", "LAST_WEEK_SUN_SAT", "LAST_WEEK_MON_SUN"),
   customer_id           = getOption('gads.customer.id'),
   login_customer_id     = getOption('gads.login.customer.id'),
   include_resource_name = FALSE,
@@ -33,6 +34,14 @@ gads_get_report_helper <- function(
 
   # manager_customer id
   login_customer_id <- ifelse(length(login_customer_id) == 0, customer_id, login_customer_id)
+
+  # check args
+  during <- match.arg(during)
+
+  # check login and custimer ids
+  if ( is.null(customer_id) ) {
+    gads_abort('customer_id is require argument, please set it and retry your request.')
+  }
 
   # info
   if (verbose) cli_alert_info(c('Loading data: ', str_replace(customer_id, '(\\d{3})(\\d{3})(\\d{4})', '\\1-\\2-\\3')))
@@ -48,13 +57,17 @@ gads_get_report_helper <- function(
             str_c(collapse = ', ')
 
   # where block
-  if (resource %in% c('ad_group_criterion')) {
+  if (resource %in% c('ad_group_criterion', 'keyword_plan', 'keyword_plan_ad_group', 'keyword_plan_ad_group_keyword', 'keyword_plan_campaign', 'keyword_plan_campaign_keyword')) {
     date_from <- NULL
     date_to   <- NULL
+    during    <- NA
   }
 
   if ( any(is.null(date_from), is.null(date_to)) & is.null(where) ) {
     where_clause <- ""
+  } else if ( !is.na(during) ) {
+    where <- str_c(where, collapse = " AND ")
+    where_clause <- str_glue("WHERE segments.date DURING '{during}' AND {where}")
   } else if ( any(is.null(date_from), is.null(date_to)) ) {
     where <- str_c(where, collapse = " AND ")
     where_clause <- str_glue("WHERE {where}")
@@ -93,21 +106,26 @@ gads_get_report_helper <- function(
   if (verbose) cli_alert_info('Send request')
 
   # send query
-  ans <- POST(
-    url    = str_glue('https://googleads.googleapis.com/v8/customers/{customer_id}/googleAds:searchStream'),
+  out <- request_build(
+    method   = "POST",
+    body     = body,
+    path     = str_glue('{options("gads.api.version")}/customers/{customer_id}/googleAds:searchStream'),
+    token    = gads_token(),
+    base_url = getOption('gads.base.url')
+  )
+
+  # send request
+  ans <- request_retry(
+    out,
     encode = 'json',
-    body   = body,
-    add_headers(
-      Authorization       = str_glue("Bearer {gads_token()$auth_token$credentials$access_token}"),
-      `developer-token`   = gads_developer_token(),
-      `login-customer-id` = login_customer_id
-      )
+    add_headers(`developer-token`= gads_developer_token(),
+                `login-customer-id` = login_customer_id)
   )
 
   # --------------
   # get answer
   if (verbose) cli_alert_info('Get answer query')
-  out <- content(ans)
+  out <- response_process(ans, error_message = gads_check_errors2)
 
   # requests_ids
   if ( !is.null(ans$headers$`request-id`) ) {
@@ -125,10 +143,10 @@ gads_get_report_helper <- function(
   }
 
   # check for errors
-  gads_check_errors(out, customer_id, verbose, rq_ids)
+  #gads_check_errors(out, customer_id, verbose, rq_ids)
 
   # empty answer handler
-  if ( length(out) == 0 ) return(tibble())
+  if ( length(out) == 0 ) return(tibble() )
 
   # --------------
   # parsing answer
@@ -171,28 +189,35 @@ gads_get_report_helper <- function(
   }
 
   # renaming to snale case
-  if (verbose) cli_alert_info('Rename columns to snake_case')
-  res <- rename_with(res, gads_fix_names, matches('metrics|segments') ) %>%
-         rename_with(to_snake_case)
+  if (verbose) cli_alert_info('Rename columns to gads.column.name case')
+  res <- rename_with(res, getOption('gads.column.name.case.fun')) %>%
+         rename_with(gads_fix_names, matches('metrics|segments', ignore.case = TRUE) )
+
 
   # fix date
-  if ( any(str_detect(names(res), 'date')) ) {
+  if ( any(str_detect(str_to_lower(names(res)), 'date')) ) {
     if (verbose) cli_alert_info('Fix date fields')
-    res <- mutate(res,
-                  across(matches('date'), as.Date))
+    try( {
+      res <- mutate(res,
+                    across(matches('date', ignore.case = TRUE) & !matches('interval', ignore.case = TRUE), as.Date))
+    },
+    silent = TRUE)
   }
 
   # fix cost
-  if ( 'cost_micros' %in% names(res) ) {
+  if ( any(str_detect(str_to_lower(names(res)), 'micros')) ) {
     if (verbose) cli_alert_info('Fix cost fields')
-    res$cost_micros <-  round(as.numeric(res$cost_micros) / 1000000, 2)
-    res <- rename(res, cost = 'cost_micros')
+
+    res <- mutate(res,
+                  across(matches('micros', ignore.case = TRUE), function(x) round(as.numeric(x) / 1000000, 2 )) ) %>%
+           rename_with(gads_fix_names_regexp, matches('micros', ignore.case = TRUE), regexp = "\\_micros|micros")
+
   }
 
   # remove resource names
   if ( isFALSE(include_resource_name) ) {
 
-    res <- select(res, -matches('resource_name'))
+    res <- select(res, -matches('resource\\_?name'))
 
   }
 
@@ -203,4 +228,3 @@ gads_get_report_helper <- function(
   return(res)
 
 }
-

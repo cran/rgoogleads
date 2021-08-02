@@ -45,8 +45,20 @@ gargle_lookup_table <- list(
 #' ## choose to get a new one
 #' gads_auth(email = NA)
 #'
-#' ## use a service account token
-#' gads_auth(path = "foofy-83ee9e7c9c48.json")
+#' ## -----------------------
+#' ## use own developer token
+#' gads_auth(
+#'     email = "yourname@example.com",
+#'     developer_token = "your developer token"
+#' )
+#'
+#' ## -----------------------
+#' ## use own OAuth client app
+#' gads_auth_configure(
+#'     path = "path/to/your/oauth_client.json"
+#' )
+#'
+#' gads_auth(email = "yourname@example.com")
 #' }
 gads_auth <- function(
   email           = gargle::gargle_oauth_email(),
@@ -56,17 +68,23 @@ gads_auth <- function(
   developer_token = getOption('gads.developer.token'),
   token           = NULL) {
 
-  #if ( is.null(gads_oauth_app()) )
+  # check default app
+  app <- gads_oauth_app() %||% gads_default_ouath_app()
+
+  # check link between app_secret and developer token
+  if ( app$secret == "302158242268-eqkksdns6gbdl7qf0v59639pder9knql.apps.googleusercontent.com" & developer_token != "EBkkx-znu2cZcEY7e74smg" ) {
+    gads_abort("You can`t use default oauth app with own developer token, please create default app and set it by gads_auth_configure()")
+  }
 
   cred <- gargle::token_fetch(
-    scopes = 'https://www.googleapis.com/auth/adwords',
-    app = gads_oauth_app() %||% gads_default_ouath_app(),
-    email = email,
-    path = path,
+    scopes  = 'https://www.googleapis.com/auth/adwords',
+    app     = app,
+    email   = email,
+    path    = path,
     package = "rgoogleads",
-    cache = cache,
+    cache   = cache,
     use_oob = use_oob,
-    token = token,
+    token   = token,
     user_params = list(developer_token = developer_token)
   )
 
@@ -123,12 +141,13 @@ gads_has_token <- function() {
   inherits(.auth$cred, "Token2.0")
 }
 
-# auth config
+
 #' Edit and view auth configuration
 #'
 #' @eval gargle:::PREFIX_auth_configure_description(gargle_lookup_table)
 #' @eval gargle:::PREFIX_auth_configure_params()
 #' @eval gargle:::PREFIX_auth_configure_return(gargle_lookup_table)
+#' @param developer_token Your Google Ads Developer Token.
 #'
 #' @family auth functions
 #' @export
@@ -156,21 +175,21 @@ gads_has_token <- function() {
 #'
 #'   # bring your own app via JSON downloaded from Google Developers Console
 #'   # this file has the same structure as the JSON from Google
-#'   app_path <- system.file(
-#'     "extdata", "fake-oauth-client-id-and-secret.json",
-#'     package = "googlesheets4"
-#'   )
 #'   gads_auth_configure(path = app_path)
 #'
 #'   # confirm the changes
 #'   gads_oauth_app()
+#'
+#'   # use own developer token
+#'   gads_auth_configure(developer_token = 'Your developer token')
+#'
 #' }
 #'
 #' # restore original auth config
 #' gs4_auth_configure(app = original_app, api_key = original_api_key)
 #' }
 #' @export
-gads_auth_configure <- function(app, path, api_key) {
+gads_auth_configure <- function(app, path, api_key, developer_token) {
   if (!missing(app) && !missing(path)) {
     gads_abort("Must supply exactly one of {.arg app} or {.arg path}, not both")
   }
@@ -190,8 +209,13 @@ gads_auth_configure <- function(app, path, api_key) {
     .auth$set_api_key(api_key)
   }
 
+  if (!missing(developer_token)) {
+    options('gads.developer.token' = developer_token)
+  }
+
   invisible(.auth)
 }
+
 
 #' @export
 #' @rdname gads_auth_configure
@@ -199,6 +223,19 @@ gads_auth_cache_path <- function() {
 
   if ( gads_has_token() ) {
     .auth$cred$cache_path
+  } else {
+    cli_alert_warning("You need to log in to google account")
+  }
+
+}
+
+#' Open folder with auth cache files
+#' @export
+#' @rdname gads_auth_configure
+gads_open_auth_cache_folder <- function() {
+
+  if ( gads_has_token() ) {
+    shell.exec(.auth$cred$cache_path)
   } else {
     cli_alert_warning("You need to log in to google account")
   }
@@ -260,7 +297,17 @@ gads_api_key <- function() .auth$api_key
 
 #' @export
 #' @rdname gads_auth_configure
-gads_developer_token <- function() .auth$cred$params$user_params$developer_token
+gads_developer_token <- function() {
+
+  dev_token <- .auth$cred$params$user_params$developer_token
+
+  if ( is.null(dev_token) ) {
+    dev_token <- getOption('gads.developer.token')
+  }
+
+  return(dev_token)
+
+}
 
 
 #' @export

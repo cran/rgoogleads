@@ -62,19 +62,25 @@ gads_get_account_hierarchy <- function(
     toJSON(auto_unbox = T, pretty = T)
 
   # send query
-  ans <- POST(
-    url    = str_glue('https://googleads.googleapis.com/v8/customers/{manager_customer_id}/googleAds:searchStream'),
+  # send query
+  out <- request_build(
+    method   = "POST",
+    body     = body,
+    path     = str_glue('{options("gads.api.version")}/customers/{manager_customer_id}/googleAds:searchStream'),
+    token    = gads_token(),
+    base_url = getOption('gads.base.url')
+  )
+
+  # send request
+  ans <- request_retry(
+    out,
     encode = 'json',
-    body   = body,
-    add_headers(
-      Authorization       = str_glue("Bearer {gads_token()$auth_token$credentials$access_token}"),
-      `developer-token`   = gads_developer_token(),
-      `login-customer-id` = login_customer_id
-    )
+    add_headers(`developer-token`= gads_developer_token(),
+                `login-customer-id` = login_customer_id)
   )
 
   # read answer
-  out <- content(ans)
+  out <- response_process(ans, error_message = gads_check_errors2)
 
   # check for error
   gads_check_errors(out,request_id =  headers(ans)$`request-id`)
@@ -87,7 +93,7 @@ gads_get_account_hierarchy <- function(
     unnest_wider('results') %>%
     unnest_wider('customer') %>%
     unnest_wider('customerClient', names_sep = "_") %>%
-    rename_with(to_snake_case) -> res
+    rename_with(getOption('gads.column.name.case.fun')) -> res
 
   # success msg
   cli_alert_success('Success! Loaded {nrow(res)} rows!')

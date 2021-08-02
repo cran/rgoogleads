@@ -3,14 +3,17 @@
 \name{gads_auth_configure}
 \alias{gads_auth_configure}
 \alias{gads_auth_cache_path}
+\alias{gads_open_auth_cache_folder}
 \alias{gads_api_key}
 \alias{gads_developer_token}
 \alias{gads_oauth_app}
 \title{Edit and view auth configuration}
 \usage{
-gads_auth_configure(app, path, api_key)
+gads_auth_configure(app, path, api_key, developer_token)
 
 gads_auth_cache_path()
+
+gads_open_auth_cache_folder()
 
 gads_api_key()
 
@@ -26,6 +29,8 @@ client id (aka key) and secret, in one of the forms supported for the \code{txt}
 argument of \code{\link[jsonlite:fromJSON]{jsonlite::fromJSON()}} (typically, a file path or JSON string).}
 
 \item{api_key}{API key.}
+
+\item{developer_token}{Your Google Ads Developer Token.}
 }
 \value{
 \itemize{
@@ -77,14 +82,14 @@ if (require(httr)) {
 
   # bring your own app via JSON downloaded from Google Developers Console
   # this file has the same structure as the JSON from Google
-  app_path <- system.file(
-    "extdata", "fake-oauth-client-id-and-secret.json",
-    package = "googlesheets4"
-  )
   gads_auth_configure(path = app_path)
 
   # confirm the changes
   gads_oauth_app()
+
+  # use own developer token
+  gads_auth_configure(developer_token = 'Your developer token')
+
 }
 
 # restore original auth config

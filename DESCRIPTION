@@ -1,6 +1,6 @@
 Package: rgoogleads
 Title: Loading Data from 'Google Ads API'
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: 
     c(person(given  = "Alexey",
              family = "Seleznev",
@@ -13,15 +13,19 @@ Description: Interface for loading data from 'Google Ads API',
     see <https://developers.google.com/google-ads/api/docs/start>. 
     Package provide function for authorization and loading reports.
 License: MIT + file LICENSE
+BugReports: https://github.com/selesnow/rgoogleads/issues
+URL: https://selesnow.github.io/rgoogleads/,
+        https://selesnow.github.io/rgoogleads/docs/,
+        https://github.com/selesnow/rgoogleads
 Encoding: UTF-8
-Imports: gargle, httr, stringr, rlang, dplyr (>= 1.0.0), tidyr (>=
-        1.0.0), jsonlite, snakecase, cli (>= 2.5.0.9000), pbapply,
-        purrr, withr, rlist
+Imports: gargle (>= 1.2.0), httr, stringr, rlang, dplyr (>= 1.0.0),
+        tidyr (>= 1.0.0), jsonlite, snakecase, cli (>= 3.0.0), pbapply,
+        purrr, withr, rlist, rvest (>= 1.0.0)
 RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2021-07-01 08:54:54 UTC; Alsey
+Packaged: 2021-08-02 09:49:12 UTC; Alsey
 Author: Alexey Seleznev [aut, cre] (<https://orcid.org/0000-0003-0410-7385>),
   Netpeak [cph]
 Maintainer: Alexey Seleznev <selesnow@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-07-02 06:50:02 UTC
+Date/Publication: 2021-08-02 15:50:02 UTC

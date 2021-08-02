@@ -16,34 +16,32 @@ gads_customer <- function(
   verbose = TRUE
 ) {
 
-  # check token
-  gargle::token_tokeninfo(gads_token())
-
-  # delete _
+  # delete - in customer id
   customer_id <- str_replace_all(customer_id, '-', '')
 
-  # send query
-  ans <- GET(str_glue('https://googleads.googleapis.com/v8/customers/{customer_id}/'),
-             add_headers(Authorization = str_glue("Bearer {gads_token()$auth_token$credentials$access_token}"),
-                         `developer-token`= gads_developer_token())
+  # to env
+  gads_customer_id_to_env(customer_id)
+
+  # build query
+  out <- request_build(
+    method = "GET",
+    path   = str_glue('{options("gads.api.version")}/customers/{customer_id}/'),
+    token = gads_token(),
+    base_url = getOption('gads.base.url')
   )
 
-  # get result
-  data <- content(ans)
+  # send request
+  ans <- request_retry(
+    out,
+    add_headers(`developer-token`= gads_developer_token())
+    )
 
   # request id
   rq_ids <- headers(ans)$`request-id`
   rgoogleads$last_request_id <- rq_ids
 
-  # check for error
-  # gads_check_errors(out = data, client_id = '', request_id = rq_ids, verbose = FALSE)
-  if ( "error" %in% names(data) ) {
-    msg <- ifelse(is.null(data$error$details[[1]]$errors[[1]]$message), data$error$message, paste(data$error$message, data$error$details[[1]]$errors[[1]]$message, sep = ": "))
-    if(verbose) cli_alert_danger(c(customer_id, ": ", msg))
-    if(verbose) cli_alert_danger(c("Request ID: ", rq_ids))
-    if(verbose) cli_alert_danger("You can use gads_last_request_ids() for get last request id, if you want send ticket to google ads api support.")
-    stop(paste(customer_id, ": ", msg, " Request ID: ", rq_ids))
-  }
+  # pars result
+  data <- response_process(ans, error_message = gads_check_errors2)
 
   # return the data
   return(data)
