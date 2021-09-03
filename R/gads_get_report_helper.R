@@ -67,7 +67,7 @@ gads_get_report_helper <- function(
     where_clause <- ""
   } else if ( !is.na(during) ) {
     where <- str_c(where, collapse = " AND ")
-    where_clause <- str_glue("WHERE segments.date DURING '{during}' AND {where}")
+    where_clause <- str_glue("WHERE segments.date DURING {during} AND {where}")
   } else if ( any(is.null(date_from), is.null(date_to)) ) {
     where <- str_c(where, collapse = " AND ")
     where_clause <- str_glue("WHERE {where}")
@@ -187,6 +187,12 @@ gads_get_report_helper <- function(
     res <- unnest_wider(res, col, names_sep = "_")
 
   }
+
+  # convert metrics to numeric
+  if (verbose) cli_alert_info('Convert metrics to numeric type')
+  res <- mutate(res,
+                across(matches('metrics'), as.numeric)
+  )
 
   # renaming to snale case
   if (verbose) cli_alert_info('Rename columns to gads.column.name case')
