@@ -45,15 +45,27 @@
 
   }
 
+  if ( Sys.getenv("GADS_EMAIL") != "" ) {
+
+    gads_email <- Sys.getenv("GADS_EMAIL")
+    cli_alert_info('Set email from environt variables')
+
+  } else {
+
+    gads_email <- NULL
+
+  }
+
   # options
   op <- options()
   op.gads <- list(gads.developer.token      = developer_token,
-                  gads.api.version          = "v8",
+                  gads.api.version          = "v9",
                   gads.login.customer.id    = login_customer_id,
                   gads.customer.id          = customer_id,
                   gads.multi.account.verbos = FALSE,
                   gads.base.url             = 'https://googleads.googleapis.com/',
-                  gads.column.name.case.fun = snakecase::to_snake_case)
+                  gads.column.name.case.fun = snakecase::to_snake_case,
+                  gargle_oauth_email        = gads_email)
 
   toset <- !(names(op.gads) %in% names(op))
   if (any(toset)) options(op.gads[toset])
