@@ -1,4 +1,4 @@
-# rgoogleads: R package for work with Google Ads API <a href='https://selesnow.github.io/rgoogleads/'><img src='man/figures/rgoogleads.png' align="right" height="138.5" /></a>
+# rgoogleads: R package for work with Google Ads API
 
 <!-- badges: start -->
 [![](https://cranlogs.r-pkg.org/badges/grand-total/rgoogleads)](https://cran.r-project.org/package=rgoogleads)
@@ -9,6 +9,7 @@ status](https://www.r-pkg.org/badges/version-ago/rgoogleads)](https://CRAN.R-pro
 [![R-CMD-check](https://github.com/selesnow/rgoogleads/workflows/R-CMD-check/badge.svg)](https://github.com/selesnow/rgoogleads/actions)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
+
 
 ## Table of Contents
 
@@ -180,7 +181,7 @@ This section contains links to articles dedicated to `rgoogleads`.
 If you have published an article about `rgoogleads` let me know about it in [telegram](https://t.me/AlexeySeleznev) or [email](mailto:selesnow@gmail.com) and I will add it to the list of links.
 
 ## Author
-Alexey Seleznev, Head of analytics dept. at [Netpeak](https://netpeak.net)
+Alexey Seleznev, Head of analytics dept. at [Netpeak](https://netpeak.net/en/us/)
 <Br>Telegram Channel: [R4marketing](https://t.me/R4marketing)
 <Br>email: selesnow@gmail.com
 <Br>facebook: [facebook.com/selesnow](https://www.facebook.com/selesnow)

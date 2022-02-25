@@ -122,11 +122,27 @@ gads_get_report <- function(
   # test for selectble with date fields
   selectable <- suppressMessages( gads_get_fields_cached(resource)$selectableWith )
 
+  # query
+  # compose query
+  gaql_query <- gads_make_query(
+    resource,
+    fields,
+    where,
+    order_by,
+    limit,
+    parameters,
+    date_from,
+    date_to,
+    during
+  )
+
+  if ( getOption('gads.show_gaql_query') ) cat("\n\nGAQL Query:\n\n", gaql_query)
+
   # where block
   if (! "segments.date" %in% selectable ) {
     date_from <- NULL
     date_to   <- NULL
-    during    <- NA
+    during    <- NULL
     cli_alert_warning('fields values of date_from, date_to and during was unset automatically, because it is not selectable with {resource}')
   }
 
@@ -135,15 +151,7 @@ gads_get_report <- function(
 
     # if only one account use gads_get_report
     res <- gads_get_report_helper(
-      resource              = resource,
-      fields                = fields,
-      where                 = where,
-      order_by              = order_by,
-      limit                 = limit,
-      parameters            = parameters,
-      date_from             = date_from,
-      date_to               = date_to,
-      during                = during,
+      gaql_query            = gaql_query,
       customer_id           = customer_id,
       login_customer_id     = login_customer_id,
       include_resource_name = include_resource_name,
@@ -180,14 +188,7 @@ gads_get_report <- function(
         safely(
           function(x) {
             gads_get_report_helper(
-              resource              = resource,
-              fields                = fields,
-              where                 = where,
-              order_by              = order_by,
-              limit                 = limit,
-              parameters            = parameters,
-              date_from             = date_from,
-              date_to               = date_to,
+              gaql_query            = gaql_query,
               customer_id           = x,
               login_customer_id     = login_customer_id,
               include_resource_name = include_resource_name,
@@ -207,14 +208,7 @@ gads_get_report <- function(
         safely(
           function(x) {
             gads_get_report_helper(
-              resource              = resource,
-              fields                = fields,
-              where                 = where,
-              order_by              = order_by,
-              limit                 = limit,
-              parameters            = parameters,
-              date_from             = date_from,
-              date_to               = date_to,
+              gaql_query            = gaql_query,
               customer_id           = x,
               login_customer_id     = login_customer_id,
               include_resource_name = include_resource_name,
