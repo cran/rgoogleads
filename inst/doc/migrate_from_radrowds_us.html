@@ -12,7 +12,7 @@
 
 <meta name="author" content="Alexey Seleznev" />
 
-<meta name="date" content="2022-02-25" />
+<meta name="date" content="2022-04-19" />
 
 <title>Migrate from RAdwords to rgoogleads</title>
 
@@ -963,9 +963,10 @@ var markInterval = function(d, digits, interval, mark, decMark, precision) {
   return xv.join(decMark);
 };
 
-DTWidget.formatCurrency = function(data, currency, digits, interval, mark, decMark, before) {
+DTWidget.formatCurrency = function(data, currency, digits, interval, mark, decMark, before, zeroPrint) {
   var d = parseFloat(data);
   if (isNaN(d)) return '';
+  if (zeroPrint !== null && d === 0.0) return zeroPrint;
   var res = markInterval(d, digits, interval, mark, decMark);
   res = before ? (/^-/.test(res) ? '-' + currency + res.replace(/^-/, '') : currency + res) :
     res + currency;
@@ -978,21 +979,24 @@ DTWidget.formatString = function(data, prefix, suffix) {
   return prefix + d + suffix;
 };
 
-DTWidget.formatPercentage = function(data, digits, interval, mark, decMark) {
+DTWidget.formatPercentage = function(data, digits, interval, mark, decMark, zeroPrint) {
   var d = parseFloat(data);
   if (isNaN(d)) return '';
+  if (zeroPrint !== null && d === 0.0) return zeroPrint;
   return markInterval(d * 100, digits, interval, mark, decMark) + '%';
 };
 
-DTWidget.formatRound = function(data, digits, interval, mark, decMark) {
+DTWidget.formatRound = function(data, digits, interval, mark, decMark, zeroPrint) {
   var d = parseFloat(data);
   if (isNaN(d)) return '';
+  if (zeroPrint !== null && d === 0.0) return zeroPrint;
   return markInterval(d, digits, interval, mark, decMark);
 };
 
-DTWidget.formatSignif = function(data, digits, interval, mark, decMark) {
+DTWidget.formatSignif = function(data, digits, interval, mark, decMark, zeroPrint) {
   var d = parseFloat(data);
   if (isNaN(d)) return '';
+  if (zeroPrint !== null && d === 0.0) return zeroPrint;
   return markInterval(d, digits, interval, mark, decMark, true);
 };
 
@@ -1012,6 +1016,55 @@ DTWidget.formatDate = function(data, method, params) {
 };
 
 window.DTWidget = DTWidget;
+
+// A helper function to update the lims of the existing filters
+var set_filter_lims = function(td, new_vals) {
+  // Based on the filter type, set its new values
+  if (['factor', 'logical'].includes(td.getAttribute('data-type'))) {
+    // Reformat the new dropdown options for use with selectize
+    new_vals = new_vals.map(function(item) {return {text: item, value: item}});
+
+    // Find the selectize object
+    var dropdown = $(td).find('.selectized').eq(0)[0].selectize;
+
+    // Note the current values
+    var old_vals = dropdown.getValue();
+
+    // Remove the existing values
+    dropdown.clearOptions();
+
+    // Add the new options
+    dropdown.addOption(new_vals);
+
+    // Preserve the existing values
+    dropdown.setValue(old_vals);
+
+  } else if (['number', 'integer', 'date', 'time'].includes(td.getAttribute('data-type'))) {
+    // Note what the new limits will be just for this filter
+    var new_lims = [...new_vals];
+
+    // Determine the current values and limits
+    var slider = $(td).find('.noUi-target').eq(0);
+    var old_vals = slider.val().map(Number);
+    var old_lims = slider.noUiSlider('options').range;
+    old_lims = [old_lims.min, old_lims.max];
+
+    // Preserve the current values if filters have been applied; otherwise, apply no filtering
+    if (old_vals[0] != old_lims[0]) {
+      new_vals[0] = Math.max(old_vals[0], new_vals[0]);
+    }
+
+    if (old_vals[1] != old_lims[1]) {
+      new_vals[1] = Math.min(old_vals[1], new_vals[1]);
+    }
+
+    // Update the endpoints of the slider
+    slider.noUiSlider({
+      start: new_vals,
+      range: {'min': new_lims[0], 'max': new_lims[1]}
+    }, true);
+  }
+};
 
 var transposeArray2D = function(a) {
   return a.length === 0 ? a : HTMLWidgets.transposeArray2D(a);
@@ -2308,6 +2361,20 @@ HTMLWidgets.widget({
       table.ajax.reload(null, resetPaging);
     }
 
+    // update table filters (set new limits of sliders)
+    methods.updateFilters = function(newLims) {
+      // loop through each filter in the filter row
+      filterRow.each(function(i, td) {
+        var k = i;
+        if (filterRow.length > newLims.length) {
+          if (i === 0) return;  // first column is row names
+          k = i - 1;
+        }
+        // Update the filters to reflect the updated data
+        set_filter_lims(td, newLims[k]);
+      });
+    };
+
     table.shinyMethods = methods;
   },
   resize: function(el, width, height, instance) {
@@ -2331,6 +2398,12 @@ HTMLWidgets.widget({
     var framingHeight = dtWrapper.innerHeight() - dtScrollBody.innerHeight();
     var scrollBodyHeight = availableHeight - framingHeight;
 
+    // we need to set `max-height` to none as datatables library now sets this
+    // to a fixed height, disabling the ability to resize to fill the window,
+    // as it will be set to a fixed 100px under such circumstances, e.g., RStudio IDE,
+    // or FlexDashboard
+    // see https://github.com/rstudio/DT/issues/951#issuecomment-1026464509
+    dtScrollBody.css('max-height', 'none');
     // set the height
     dtScrollBody.height(scrollBodyHeight + 'px');
   },
@@ -2585,6 +2658,7 @@ l;l.fn.dataTableSettings=u.settings;l.fn.dataTableExt=u.ext;l.fn.DataTable=funct
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -2880,7 +2954,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Migrate from RAdwords to rgoogleads</h1>
 <h4 class="author">Alexey Seleznev</h4>
-<h4 class="date">2022-02-25</h4>
+<h4 class="date">2022-04-19</h4>
 
 
 
@@ -2974,13 +3048,13 @@ instead, you can use the metrics.impressions &gt; 0 filter.</li>
 </div>
 <div id="migrating-from-radwords-to-rgoogleads" class="section level1">
 <h1>Migrating from <code>RAdwords</code> to <code>rgoogleads</code></h1>
-<div id="htmlwidget-0d4876f3752b2dfed4c3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0d4876f3752b2dfed4c3">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["Authorization","Metadata request","Report request"],["doAuth()","reports(), metrics()","statement() + getData()"],["gads_auth_configure() + gads_auth()","gads_get_metadata(), gads_get_fields()","gads_get_report()"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Operation<\/th>\n      <th>RAdwords<\/th>\n      <th>rgoogleads<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"tip","order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}],"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-829b1675c8f4dcf9d8ea" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-829b1675c8f4dcf9d8ea">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["Authorization","Metadata request","Report request"],["doAuth()","reports(), metrics()","statement() + getData()"],["gads_auth_configure() + gads_auth()","gads_get_metadata(), gads_get_fields()","gads_get_report()"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Operation<\/th>\n      <th>RAdwords<\/th>\n      <th>rgoogleads<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"tip","columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 <p>The former report types in Google AdWords have become resources in
 Google Ads. See the comparison table from the official <a href="https://developers.google.com/google-ads/api/docs/migration/mapping">help
 guide</a>:</p>
-<div id="htmlwidget-301a0d0adf458420ecfe" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-301a0d0adf458420ecfe">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36"],["ACCOUNT_PERFORMANCE_REPORT","AD_PERFORMANCE_REPORT","ADGROUP_PERFORMANCE_REPORT","AGE_RANGE_PERFORMANCE_REPORT","AUDIENCE_PERFORMANCE_REPORT","AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT","BID_GOAL_PERFORMANCE_REPORT","BUDGET_PERFORMANCE_REPORT","CALL_METRICS_CALL_DETAILS_REPORT","CAMPAIGN_AD_SCHEDULE_TARGET_REPORT","CAMPAIGN_CRITERIA_REPORT","CAMPAIGN_PERFORMANCE_REPORT","CAMPAIGN_SHARED_SET_REPORT","CAMPAIGN_LOCATION_TARGET_REPORT","CLICK_PERFORMANCE_REPORT","DISPLAY_KEYWORD_PERFORMANCE_REPORT","DISPLAY_TOPICS_PERFORMANCE_REPORT","GENDER_PERFORMANCE_REPORT","GEO_PERFORMANCE_REPORT","KEYWORDLESS_QUERY_REPORT","KEYWORDS_PERFORMANCE_REPORT","LABEL_REPORT","LANDING_PAGE_REPORT","PAID_ORGANIC_QUERY_REPORT","PARENTAL_STATUS_PERFORMANCE_REPORT","PLACEHOLDER_FEED_ITEM_REPORT","PLACEHOLDER_REPORT","PLACEMENT_PERFORMANCE_REPORT","PRODUCT_PARTITION_REPORT","SEARCH_QUERY_PERFORMANCE_REPORT","SHARED_SET_CRITERIA_REPORT","SHARED_SET_REPORT","SHOPPING_PERFORMANCE_REPORT","URL_PERFORMANCE_REPORT","USER_AD_DISTANCE_REPORT","VIDEO_PERFORMANCE_REPORT"],["customer","ad_group_ad","ad_group","age_range_view","campaign_audience_view,ad_group_audience_view","group_placement_view","bidding_strategy","campaign_budget","call_view","ad_schedule_view","campaign_criterion","campaign","campaign_shared_set","location_view","click_view","display_keyword_view","topic_view","gender_view","geographic_view,user_location_view","dynamic_search_ads_search_term_view","keyword_view","label","landing_page_view,expanded_landing_page_view","paid_organic_search_term_view","parental_status_view","feed_item,feed_item_target","feed_placeholder_view","managed_placement_view","product_group_view","search_term_view","shared_criterion","shared_set","shopping_performance_view","detail_placement_view","distance_view","video"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Тип отчёта в Google AdWords API<\/th>\n      <th>Ресурс в Google Ads API<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":20,"order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}],"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-403a75bd5b8eb00e7a9f" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-403a75bd5b8eb00e7a9f">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37"],["ACCOUNT_PERFORMANCE_REPORT","AD_PERFORMANCE_REPORT","ADGROUP_PERFORMANCE_REPORT","AGE_RANGE_PERFORMANCE_REPORT","AUDIENCE_PERFORMANCE_REPORT","AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT","BID_GOAL_PERFORMANCE_REPORT","BUDGET_PERFORMANCE_REPORT","CALL_METRICS_CALL_DETAILS_REPORT","CAMPAIGN_AD_SCHEDULE_TARGET_REPORT","CAMPAIGN_CRITERIA_REPORT","CAMPAIGN_PERFORMANCE_REPORT","CAMPAIGN_SHARED_SET_REPORT","CAMPAIGN_LOCATION_TARGET_REPORT","CLICK_PERFORMANCE_REPORT","DISPLAY_KEYWORD_PERFORMANCE_REPORT","DISPLAY_TOPICS_PERFORMANCE_REPORT","GENDER_PERFORMANCE_REPORT","GEO_PERFORMANCE_REPORT","KEYWORDLESS_QUERY_REPORT","KEYWORDS_PERFORMANCE_REPORT","LABEL_REPORT","LANDING_PAGE_REPORT","PAID_ORGANIC_QUERY_REPORT","PARENTAL_STATUS_PERFORMANCE_REPORT","PLACEHOLDER_FEED_ITEM_REPORT","PLACEHOLDER_REPORT","PLACEMENT_PERFORMANCE_REPORT","PRODUCT_PARTITION_REPORT","SEARCH_QUERY_PERFORMANCE_REPORT","SHARED_SET_CRITERIA_REPORT","SHARED_SET_REPORT","SHOPPING_PERFORMANCE_REPORT","TOP_CONTENT_PERFORMANCE_REPORT","URL_PERFORMANCE_REPORT","USER_AD_DISTANCE_REPORT","VIDEO_PERFORMANCE_REPORT"],["customer","ad_group_ad","ad_group","age_range_view","campaign_audience_view,ad_group_audience_view","group_placement_view","bidding_strategy","campaign_budget","call_view","ad_schedule_view","campaign_criterion","campaign","campaign_shared_set","location_view","click_view","display_keyword_view","topic_view","gender_view","geographic_view,user_location_view","dynamic_search_ads_search_term_view","keyword_view","label","landing_page_view,expanded_landing_page_view","paid_organic_search_term_view","parental_status_view","feed_item,feed_item_target","feed_placeholder_view","managed_placement_view","product_group_view","search_term_view","shared_criterion","shared_set","shopping_performance_view","No longer available in the Google Ads API.","detail_placement_view","distance_view","video"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Тип отчёта в Google AdWords API<\/th>\n      <th>Ресурс в Google Ads API<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":20,"columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 <p>See the <a href="https://developers.google.com/google-ads/api/docs/migration/mapping#field_mappings_for_reports">official
 help</a> guide for the correspondence between the “Report” and the
 resource fields. The table is large, so there’s no need to duplicate it
