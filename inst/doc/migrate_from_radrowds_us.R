@@ -23,22 +23,22 @@ DT::datatable(
 ## ---- eval = TRUE, results = "asis", echo=FALSE-------------------------------
 library(dplyr)
 library(rvest)
-# reports_table <- data.frame(
-#   adwords = c("ACCOUNT_PERFORMANCE_REPORT", "AD_PERFORMANCE_REPORT", "ADGROUP_PERFORMANCE_REPORT", "AGE_RANGE_PERFORMANCE_REPORT",
-#               "AUDIENCE_PERFORMANCE_REPORT", "AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT", "BID_GOAL_PERFORMANCE_REPORT", "BUDGET_PERFORMANCE_REPORT",
-#               "CALL_METRICS_CALL_DETAILS_REPORT", "CAMPAIGN_AD_SCHEDULE_TARGET_REPORT", "CAMPAIGN_CRITERIA_REPORT", "CAMPAIGN_PERFORMANCE_REPORT",
-#               "CAMPAIGN_SHARED_SET_REPORT", "CAMPAIGN_LOCATION_TARGET_REPORT", "CLICK_PERFORMANCE_REPORT", "DISPLAY_KEYWORD_PERFORMANCE_REPORT"), 
-#   ads     = c("customer", "ad_group_ad", "ad_group", "age_range_view",
-#               "campaign_audience_view, ad_group_audience_view", "group_placement_view", "bidding_strategy", "campaign_budget",
-#               "call_view", "ad_schedule_view", "campaign_criterion", "campaign",
-#               "campaign_shared_set", "location_view", "click_view", "display_keyword_view"))
+reports_table <- data.frame(
+  adwords = c("ACCOUNT_PERFORMANCE_REPORT", "AD_PERFORMANCE_REPORT", "ADGROUP_PERFORMANCE_REPORT", "AGE_RANGE_PERFORMANCE_REPORT",
+              "AUDIENCE_PERFORMANCE_REPORT", "AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT", "BID_GOAL_PERFORMANCE_REPORT", "BUDGET_PERFORMANCE_REPORT",
+              "CALL_METRICS_CALL_DETAILS_REPORT", "CAMPAIGN_AD_SCHEDULE_TARGET_REPORT", "CAMPAIGN_CRITERIA_REPORT", "CAMPAIGN_PERFORMANCE_REPORT",
+              "CAMPAIGN_SHARED_SET_REPORT", "CAMPAIGN_LOCATION_TARGET_REPORT", "CLICK_PERFORMANCE_REPORT", "DISPLAY_KEYWORD_PERFORMANCE_REPORT"),
+  ads     = c("customer", "ad_group_ad", "ad_group", "age_range_view",
+              "campaign_audience_view, ad_group_audience_view", "group_placement_view", "bidding_strategy", "campaign_budget",
+              "call_view", "ad_schedule_view", "campaign_criterion", "campaign",
+              "campaign_shared_set", "location_view", "click_view", "display_keyword_view"))
   
-reports <- read_html("https://developers.google.com/google-ads/api/docs/migration/mapping") %>% 
-           html_element(css = ".responsive") %>% 
-           html_table(header = TRUE)
+# reports <- read_html("https://developers.google.com/google-ads/api/docs/migration/mapping") %>% 
+#            html_element(css = ".responsive") %>% 
+#            html_table(header = TRUE)
 
 DT::datatable(
-  reports, 
+  reports_table, 
   colnames = c("Тип отчёта в Google AdWords API", "Ресурс в Google Ads API"),
   options = list(pageLength = 20)
   )
