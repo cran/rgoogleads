@@ -12,7 +12,7 @@
 
 <meta name="author" content="Alexey Seleznev" />
 
-<meta name="date" content="2023-09-17" />
+<meta name="date" content="2024-05-14" />
 
 <title>Migrate from RAdwords to rgoogleads</title>
 
@@ -2799,7 +2799,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Migrate from RAdwords to rgoogleads</h1>
 <h4 class="author">Alexey Seleznev</h4>
-<h4 class="date">2023-09-17</h4>
+<h4 class="date">2024-05-14</h4>
 
 
 
@@ -2893,8 +2893,8 @@ instead, you can use the metrics.impressions &gt; 0 filter.</li>
 </div>
 <div id="migrating-from-radwords-to-rgoogleads" class="section level1">
 <h1>Migrating from <code>RAdwords</code> to <code>rgoogleads</code></h1>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-60de291ff93f15d5b3e2" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-60de291ff93f15d5b3e2">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["Authorization","Metadata request","Report request"],["doAuth()","reports(), metrics()","statement() + getData()"],["gads_auth_configure() + gads_auth()","gads_get_metadata(), gads_get_fields()","gads_get_report()"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Operation<\/th>\n      <th>RAdwords<\/th>\n      <th>rgoogleads<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"tip","columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3a3866a83e429ee40bb6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3a3866a83e429ee40bb6">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["Authorization","Metadata request","Report request"],["doAuth()","reports(), metrics()","statement() + getData()"],["gads_auth_configure() + gads_auth()","gads_get_metadata(), gads_get_fields()","gads_get_report()"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Operation<\/th>\n      <th>RAdwords<\/th>\n      <th>rgoogleads<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"tip","columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 <p>The former report types in Google AdWords have become resources in
 Google Ads. See the comparison table from the official help guide:</p>
 <pre><code>#&gt; 
@@ -2904,9 +2904,10 @@ Google Ads. See the comparison table from the official help guide:</p>
 #&gt;     filter, lag
 #&gt; The following objects are masked from &#39;package:base&#39;:
 #&gt; 
-#&gt;     intersect, setdiff, setequal, union</code></pre>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-212afb1d00d700fa3913" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-212afb1d00d700fa3913">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["ACCOUNT_PERFORMANCE_REPORT","AD_PERFORMANCE_REPORT","ADGROUP_PERFORMANCE_REPORT","AGE_RANGE_PERFORMANCE_REPORT","AUDIENCE_PERFORMANCE_REPORT","AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT","BID_GOAL_PERFORMANCE_REPORT","BUDGET_PERFORMANCE_REPORT","CALL_METRICS_CALL_DETAILS_REPORT","CAMPAIGN_AD_SCHEDULE_TARGET_REPORT","CAMPAIGN_CRITERIA_REPORT","CAMPAIGN_PERFORMANCE_REPORT","CAMPAIGN_SHARED_SET_REPORT","CAMPAIGN_LOCATION_TARGET_REPORT","CLICK_PERFORMANCE_REPORT","DISPLAY_KEYWORD_PERFORMANCE_REPORT"],["customer","ad_group_ad","ad_group","age_range_view","campaign_audience_view, ad_group_audience_view","group_placement_view","bidding_strategy","campaign_budget","call_view","ad_schedule_view","campaign_criterion","campaign","campaign_shared_set","location_view","click_view","display_keyword_view"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Тип отчёта в Google AdWords API<\/th>\n      <th>Ресурс в Google Ads API<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":20,"columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+#&gt;     intersect, setdiff, setequal, union
+#&gt; Warning: package &#39;rvest&#39; was built under R version 4.3.3</code></pre>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d5ee92c50e6a05b4822d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d5ee92c50e6a05b4822d">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["ACCOUNT_PERFORMANCE_REPORT","AD_PERFORMANCE_REPORT","ADGROUP_PERFORMANCE_REPORT","AGE_RANGE_PERFORMANCE_REPORT","AUDIENCE_PERFORMANCE_REPORT","AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT","BID_GOAL_PERFORMANCE_REPORT","BUDGET_PERFORMANCE_REPORT","CALL_METRICS_CALL_DETAILS_REPORT","CAMPAIGN_AD_SCHEDULE_TARGET_REPORT","CAMPAIGN_CRITERIA_REPORT","CAMPAIGN_PERFORMANCE_REPORT","CAMPAIGN_SHARED_SET_REPORT","CAMPAIGN_LOCATION_TARGET_REPORT","CLICK_PERFORMANCE_REPORT","DISPLAY_KEYWORD_PERFORMANCE_REPORT"],["customer","ad_group_ad","ad_group","age_range_view","campaign_audience_view, ad_group_audience_view","group_placement_view","bidding_strategy","campaign_budget","call_view","ad_schedule_view","campaign_criterion","campaign","campaign_shared_set","location_view","click_view","display_keyword_view"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Тип отчёта в Google AdWords API<\/th>\n      <th>Ресурс в Google Ads API<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":20,"columnDefs":[{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 <p>See the official help guide for the correspondence between the
 “Report” and the resource fields. The table is large, so there’s no need
 to duplicate it here.</p>
