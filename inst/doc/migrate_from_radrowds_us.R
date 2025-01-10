@@ -1,11 +1,11 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   eval = FALSE,
   comment = "#>"
 )
 
-## ---- eval = TRUE, results = "asis", echo=FALSE-------------------------------
+## ----eval = TRUE, results = "asis", echo=FALSE--------------------------------
 
 migrate_table <- data.frame(
   operation = c("Authorization", "Metadata request", "Report request"),
@@ -20,7 +20,7 @@ DT::datatable(
 
 
 
-## ---- eval = TRUE, results = "asis", echo=FALSE-------------------------------
+## ----eval = TRUE, results = "asis", echo=FALSE--------------------------------
 library(dplyr)
 library(rvest)
 reports_table <- data.frame(
@@ -45,45 +45,45 @@ DT::datatable(
 
 
 ## -----------------------------------------------------------------------------
-#  library(RAdwords)
-#  
-#  # auth
-#  adwords_auth <- doAuth()
-#  
-#  # create request
-#  query <- statement(
-#    select = c('CampaignName',
-#              'Date',
-#              'Clicks'),
-#    report = 'CAMPAIGN_PERFORMANCE_REPORT',
-#    start  = '2021-06-01',
-#    end    = '2021-06-30'
-#  )
-#  
-#  # data import
-#  data1 <- getData(
-#    clientCustomerId = 'xxx-xxx-xxxx',
-#    statement        = query,
-#    google_auth      = adwords_auth
-#  )
-#  
+# library(RAdwords)
+# 
+# # auth
+# adwords_auth <- doAuth()
+# 
+# # create request
+# query <- statement(
+#   select = c('CampaignName',
+#             'Date',
+#             'Clicks'),
+#   report = 'CAMPAIGN_PERFORMANCE_REPORT',
+#   start  = '2021-06-01',
+#   end    = '2021-06-30'
+# )
+# 
+# # data import
+# data1 <- getData(
+#   clientCustomerId = 'xxx-xxx-xxxx',
+#   statement        = query,
+#   google_auth      = adwords_auth
+# )
+# 
 
 ## -----------------------------------------------------------------------------
-#  library(rgoogleads)
-#  
-#  # auth
-#  gads_auth_configure(path = 'D:/ga_auth/app.json')
-#  gads_auth(email = 'me@gmail.com')
-#  
-#  # data import
-#  data2 <- gads_get_report(
-#    resource = 'campaign',
-#    fields   = c('campaign.name',
-#                'segments.date',
-#                'metrics.clicks'),
-#    date_from         = '2021-06-01',
-#    date_to           = '2021-06-30',
-#    customer_id       = 'xxx-xxx-xxxx',
-#    login_customer_id = 'xxx-xxx-xxxx'
-#  )
+# library(rgoogleads)
+# 
+# # auth
+# gads_auth_configure(path = 'D:/ga_auth/app.json')
+# gads_auth(email = 'me@gmail.com')
+# 
+# # data import
+# data2 <- gads_get_report(
+#   resource = 'campaign',
+#   fields   = c('campaign.name',
+#               'segments.date',
+#               'metrics.clicks'),
+#   date_from         = '2021-06-01',
+#   date_to           = '2021-06-30',
+#   customer_id       = 'xxx-xxx-xxxx',
+#   login_customer_id = 'xxx-xxx-xxxx'
+# )
 
