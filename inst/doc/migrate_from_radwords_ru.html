@@ -12,7 +12,7 @@
 
 <meta name="author" content="Алексей Селезнёв" />
 
-<meta name="date" content="2025-01-10" />
+<meta name="date" content="2025-09-03" />
 
 <title>Миграция с RAdwords на rgoogleads</title>
 
@@ -2843,7 +2843,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Миграция с RAdwords на rgoogleads</h1>
 <h4 class="author">Алексей Селезнёв</h4>
-<h4 class="date">2025-01-10</h4>
+<h4 class="date">2025-09-03</h4>
 
 
 
@@ -2935,12 +2935,12 @@ CAMPAINGN_PERFORMANCE_REPORT. В Google Ads API их нет, вместо тип
 </div>
 <div id="миграция-с-radwords-на-rgoogleads" class="section level1">
 <h1>Миграция с RAdwords на rgoogleads</h1>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-88b8bbc884d74377fb70" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-88b8bbc884d74377fb70">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["Авторизация","Запрос метаданных","Запрос отчётов"],["doAuth()","reports(), metrics()","statement() + getData()"],["gads_auth_configure() + gads_auth()","gads_get_metadata(), gads_get_fields()","gads_get_report()"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Операция<\/th>\n      <th>RAdwords<\/th>\n      <th>rgoogleads<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"tip","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"operation","targets":1},{"name":"radwords","targets":2},{"name":"rgoogleads","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5cbb0ec22ba7e3b3c9f7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5cbb0ec22ba7e3b3c9f7">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["Авторизация","Запрос метаданных","Запрос отчётов"],["doAuth()","reports(), metrics()","statement() + getData()"],["gads_auth_configure() + gads_auth()","gads_get_metadata(), gads_get_fields()","gads_get_report()"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Операция<\/th>\n      <th>RAdwords<\/th>\n      <th>rgoogleads<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"tip","columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"operation","targets":1},{"name":"radwords","targets":2},{"name":"rgoogleads","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 <p>Бывшие в Google AdWords типы отчётов, в Google Ads стали ресурсами.
 Ниже — таблица сопоставления из официальной справки:</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-e52da4221942b5c13f0f" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-e52da4221942b5c13f0f">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["ACCOUNT_PERFORMANCE_REPORT","AD_PERFORMANCE_REPORT","ADGROUP_PERFORMANCE_REPORT","AGE_RANGE_PERFORMANCE_REPORT","AUDIENCE_PERFORMANCE_REPORT","AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT","BID_GOAL_PERFORMANCE_REPORT","BUDGET_PERFORMANCE_REPORT","CALL_METRICS_CALL_DETAILS_REPORT","CAMPAIGN_AD_SCHEDULE_TARGET_REPORT","CAMPAIGN_CRITERIA_REPORT","CAMPAIGN_PERFORMANCE_REPORT","CAMPAIGN_SHARED_SET_REPORT","CAMPAIGN_LOCATION_TARGET_REPORT","CLICK_PERFORMANCE_REPORT","DISPLAY_KEYWORD_PERFORMANCE_REPORT"],["customer","ad_group_ad","ad_group","age_range_view","campaign_audience_view, ad_group_audience_view","group_placement_view","bidding_strategy","campaign_budget","call_view","ad_schedule_view","campaign_criterion","campaign","campaign_shared_set","location_view","click_view","display_keyword_view"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Тип отчёта в Google AdWords API<\/th>\n      <th>Ресурс в Google Ads API<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":20,"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"adwords","targets":1},{"name":"ads","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1d40ede1f9dc471021e7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1d40ede1f9dc471021e7">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["ACCOUNT_PERFORMANCE_REPORT","AD_PERFORMANCE_REPORT","ADGROUP_PERFORMANCE_REPORT","AGE_RANGE_PERFORMANCE_REPORT","AUDIENCE_PERFORMANCE_REPORT","AUTOMATIC_PLACEMENTS_PERFORMANCE_REPORT","BID_GOAL_PERFORMANCE_REPORT","BUDGET_PERFORMANCE_REPORT","CALL_METRICS_CALL_DETAILS_REPORT","CAMPAIGN_AD_SCHEDULE_TARGET_REPORT","CAMPAIGN_CRITERIA_REPORT","CAMPAIGN_PERFORMANCE_REPORT","CAMPAIGN_SHARED_SET_REPORT","CAMPAIGN_LOCATION_TARGET_REPORT","CLICK_PERFORMANCE_REPORT","DISPLAY_KEYWORD_PERFORMANCE_REPORT"],["customer","ad_group_ad","ad_group","age_range_view","campaign_audience_view, ad_group_audience_view","group_placement_view","bidding_strategy","campaign_budget","call_view","ad_schedule_view","campaign_criterion","campaign","campaign_shared_set","location_view","click_view","display_keyword_view"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Тип отчёта в Google AdWords API<\/th>\n      <th>Ресурс в Google Ads API<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":20,"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"adwords","targets":1},{"name":"ads","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[10,20,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 <p>Соответствие полей «Отчёт» и полей ресурсов можно найти в официальной
 справке. Таблица очень большая, поэтому не вижу смысла дублировать её
 здесь.</p>
